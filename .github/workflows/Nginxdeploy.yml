@@ -11,8 +11,16 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Rename Build File
-      run: mv path/to/build/file build/index.nginx-debian.html
+    - name: List Files in the Repository
+      run: |
+        echo "Listing files in the repository"
+        ls -alh
+
+    - name: Find and Rename the Build File
+      run: |
+        echo "Renaming the build file"
+        # Assuming the build file is inside a folder like 'build/' in your repository
+        mv ./build/* ./build/index.nginx-debian.html
 
     - name: Copy Build File to Server
       uses: appleboy/scp-action@v0.1.0
@@ -20,7 +28,7 @@ jobs:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: build/index.nginx-debian.html
+        source: ./build/index.nginx-debian.html
         target: /var/www/html
 
     - name: Restart Nginx
