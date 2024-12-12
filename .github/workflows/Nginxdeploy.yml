@@ -1,142 +1,37 @@
 name: Deploy to Ubuntu Server
-
-on:
-  workflow_dispatch:
-
+'on':
+  workflow_dispatch: null
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: List Files in the Repository
+        run: |
+          echo "Listing files in the repository"
+          ls -alh
+      - name: Find and Rename the Build File
+        run: >
+          echo "Renaming the build file"
 
-    - name: List Files in the Repository
-      run: |
-        echo "Listing files in the repository"
-        ls -alh
+          # Assuming the build file is inside a folder like 'build/' in your
+          repository
 
-    - name: Find and Rename the Build File
-      run: |
-        echo "Renaming the build file"
-        mv ./build/* ./build/index.nginx-debian.html
-
-    - name: Copy Build File to Server
-      uses: appleboy/scp-action@v0.1.0
-      with:
-        host: 43.204.142.201
-        username: ubuntu
-        key: |
-          -----BEGIN OPENSSH PRIVATE KEY-----
-          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
-          -----END OPENSSH PRIVATE KEY-----
-        source: ./build/index.nginx-debian.html
-        target: /var/www/html
-        debug: true
-
-    - name: Restart Nginx
-      uses: appleboy/ssh-action@v0.1.0
-      with:
-        host: 43.204.142.201
-        username: ubuntu
-        key: |
-          -----BEGIN OPENSSH PRIVATE KEY-----
-          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
-          -----END OPENSSH PRIVATE KEY-----
-        source: ./build/index.nginx-debian.html
-        target: /var/www/html
-        debug: true
-        script: |
-          sudo systemctl restart nginx
+          mv ./build/* ./build/index.nginx-debian.html
+      - name: Copy Build File to Server
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: '${{ secrets.SERVER_IP }}'
+          username: '${{ secrets.SERVER_USER }}'
+          key: '${{ secrets.SSH_PRIVATE_KEY }}'
+          source: ./build/index.nginx-debian.html
+          target: /var/www/html
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: '${{ secrets.SERVER_IP }}'
+          username: '${{ secrets.SERVER_USER }}'
+          key: '${{ secrets.SSH_PRIVATE_KEY }}'
+          script: |
+            sudo systemctl restart nginx
