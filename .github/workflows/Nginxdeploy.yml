@@ -11,9 +11,9 @@ jobs:
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.7
       with:
-        host: 4.240.76.246
-        username: vThink_cloud_server
-        password: vTk2024hyen@
+        host: 
+        username: 
+        password: 
         port: 22
         source: "./build/index.nginx-debian.html"
         target: /etc/demo
