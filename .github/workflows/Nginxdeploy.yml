@@ -23,6 +23,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: ./build/index.nginx-debian.html
         target: /var/www/html
+        timeout: 5m
 
     - name: Restart Nginx
       uses: appleboy/ssh-action@v0.1.0
