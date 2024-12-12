@@ -15,7 +15,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.ARTIFACT_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          chmod 777 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.ARTIFACT_HOST }} >> ~/.ssh/known_hosts
           sudo apt-get install -y sshpass
 
@@ -25,6 +25,11 @@ jobs:
 
       - name: List Files in the Repository
         run: ls -alh
+
+      - name: Add SSH key to ssh-agent
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
 
       - name: Copy Build File to Server
         uses: appleboy/scp-action@v0.1.0
