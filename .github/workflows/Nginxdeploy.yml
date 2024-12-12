@@ -21,11 +21,11 @@ jobs:
           mv ./build/* ./build/index.nginx-debian.html
 
       - name: Copy Build File to Server
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/scp-action@v0.1.7
         with:
-          host: 43.204.142.201
-          username: ubuntu
-          password: Kathir@007
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           source: ./build/index.nginx-debian.html
           target: /var/www/html
@@ -33,11 +33,11 @@ jobs:
           debug: true
 
       - name: Restart Nginx
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/scp-action@v0.1.7
         with:
-          host: 43.204.142.201
-          username: ubuntu
-          password: Kathir@007
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           script: sudo systemctl restart nginx
 
