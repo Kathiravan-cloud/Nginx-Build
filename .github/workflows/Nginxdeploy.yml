@@ -24,7 +24,7 @@ jobs:
     - name: Copy Build File to Server
       uses: appleboy/scp-action@v0.1.0
       with:
-        host: 3.108.59.227
+        host: 43.204.142.201
         username: ubuntu
         key: |
           -----BEGIN OPENSSH PRIVATE KEY-----
@@ -83,7 +83,7 @@ jobs:
     - name: Restart Nginx
       uses: appleboy/ssh-action@v0.1.0
       with:
-        host: 3.108.59.227
+        host: 43.204.142.201
         username: ubuntu
         key: |
           -----BEGIN OPENSSH PRIVATE KEY-----
