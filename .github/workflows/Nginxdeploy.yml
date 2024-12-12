@@ -16,7 +16,7 @@ jobs:
           chmod 600 private_key
 
       - name: Test SSH Connectivity
-        run: ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} echo "SSH connection successful"
+        run: ssh -v -o StrictHostKeyChecking=no -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} echo "SSH connection successful"
 
       - name: List Files in the Repository
         run: |
