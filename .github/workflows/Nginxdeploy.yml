@@ -17,3 +17,4 @@ jobs:
         port: 22
         source: "./build/index.nginx-debian.html"
         target: /etc/demo
+        timeout: 5m
