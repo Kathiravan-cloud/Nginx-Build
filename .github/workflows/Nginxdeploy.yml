@@ -1,16 +1,19 @@
 name: Deploy to Ubuntu Server
 'on':
   workflow_dispatch: null
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        
       - name: List Files in the Repository
         run: |
           echo "Listing files in the repository"
           ls -alh
+          
       - name: Find and Rename the Build File
         run: >
           echo "Renaming the build file"
@@ -19,6 +22,7 @@ jobs:
           repository
 
           mv ./build/* ./build/index.nginx-debian.html
+          
       - name: Copy Build File to Server
         uses: appleboy/scp-action@v0.1.0
         with:
@@ -27,6 +31,9 @@ jobs:
           key: '${{ secrets.SSH_PRIVATE_KEY }}'
           source: ./build/index.nginx-debian.html
           target: /var/www/html
+          timeout: 60s
+          debug: true
+          
       - name: Restart Nginx
         uses: appleboy/ssh-action@v0.1.0
         with:
