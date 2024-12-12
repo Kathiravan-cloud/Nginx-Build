@@ -1,4 +1,4 @@
-name: Deploy to Ubuntu Server
+name: Deploy to Server
 
 on:
   workflow_dispatch:
@@ -6,41 +6,41 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: List Files in the Repository
+      - name: Set up SSH key
         run: |
-          echo "Listing files in the repository"
-          ls -alh
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ARTIFACT_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.ARTIFACT_HOST }} >> ~/.ssh/known_hosts
+          sudo apt-get install -y sshpass
 
-      - name: Find and Rename the Build File
+      - name: Test SSH Connectivity
         run: |
-          echo "Renaming the build file"
-          mv ./build/* ./build/index.nginx-debian.html
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.ARTIFACT_USER }}@${{ secrets.ARTIFACT_HOST }} echo "SSH connection successful"
+
+      - name: List Files in the Repository
+        run: ls -alh
 
       - name: Copy Build File to Server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v0.1.0
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: 22
+          host: '${{ secrets.ARTIFACT_HOST }}'
+          username: '${{ secrets.ARTIFACT_USER }}'
+          key: '${{ secrets.ARTIFACT_SSH_KEY }}'
           source: ./build/index.nginx-debian.html
           target: /var/www/html
           timeout: 10m
           debug: true
 
       - name: Restart Nginx
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/ssh-action@v0.1.0
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: 22
+          host: '${{ secrets.ARTIFACT_HOST }}'
+          username: '${{ secrets.ARTIFACT_USER }}'
+          key: '${{ secrets.ARTIFACT_SSH_KEY }}'
           script: sudo systemctl restart nginx
-
-      - name: Clean Up Private Key
-        if: always()
-        run: rm -f private_key
