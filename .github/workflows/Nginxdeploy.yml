@@ -1,4 +1,4 @@
-name: Deploy to Server
+name: Deploy Workflow
 
 on:
   workflow_dispatch:
@@ -9,43 +9,13 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ARTIFACT_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.ARTIFACT_HOST }} >> ~/.ssh/known_hosts
-          sudo apt-get install -y sshpass
-
-      - name: Test SSH Connectivity
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.ARTIFACT_USER }}@${{ secrets.ARTIFACT_HOST }} echo "SSH connection successful"
-
-      - name: List Files in the Repository
-        run: ls -alh
-
-      - name: Add SSH key to ssh-agent
-        run: |
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
-
-      - name: Copy Build File to Server
-        uses: appleboy/scp-action@v0.1.0
+      - name: Set Up SSH
+        uses: webfactory/ssh-agent@v0.5.2
         with:
-          host: '${{ secrets.ARTIFACT_HOST }}'
-          username: '${{ secrets.ARTIFACT_USER }}'
-          key: '${{ secrets.ARTIFACT_SSH_KEY }}'
-          source: ./build/index.nginx-debian.html
-          target: /var/www/html
-          timeout: 10m
-          debug: true
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Restart Nginx
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: '${{ secrets.ARTIFACT_HOST }}'
-          username: '${{ secrets.ARTIFACT_USER }}'
-          key: '${{ secrets.ARTIFACT_SSH_KEY }}'
-          script: sudo systemctl restart nginx
+      - name: Deploy Code
+        run: |
+          ssh ubuntu@43.204.142.201 'cd /etc/nginx-demo && git pull'
