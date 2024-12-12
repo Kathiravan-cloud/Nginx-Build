@@ -21,7 +21,7 @@ jobs:
           mv ./build/* ./build/index.nginx-debian.html
 
       - name: Copy Build File to Server
-        uses: appleboy/ssh-action@v0.2.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: 43.204.142.201
           username: ubuntu
@@ -33,7 +33,7 @@ jobs:
           debug: true
 
       - name: Restart Nginx
-        uses: appleboy/ssh-action@v0.2.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: 43.204.142.201
           username: ubuntu
