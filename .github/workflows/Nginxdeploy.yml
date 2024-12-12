@@ -1,34 +1,19 @@
-name: Deploy buildfile
-
+name: scp files
 on:
   workflow_dispatch:
-
 jobs:
-  main:
+
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Copy source files
-        uses: actions/checkout@v2
-
-      - name: Setup node environment
-        uses: actions/setup-node@v2
-        with:
-          version: "16.13"
-
-      - name: Install dependencies and build the project
-        run: |
-          yarn
-          yarn build
-
-      # Here we use this action
-      - name: Copy files
-        uses: picodebr/copy-action@v1
-        with:
-          ssh_key: ${{ secrets.SSH_KEY }}
-          ssh_user: ${{ secrets.SSH_USERNAME }}
-          ssh_host: ${{ secrets.DESTINATION_HOST }}
-          source: ./build
-          destination: /etc/nginx-demo
-
-      - name: Restart the application
-      # Restart logic goes here...
+    - uses: actions/checkout@v4
+    - name: copy file via ssh password
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: 4.240.76.246
+        username: vThink_cloud_server
+        password: vTk2024hyen@
+        port: 22
+        source: "./build/index.nginx-debian.html"
+        target: /etc/demo
