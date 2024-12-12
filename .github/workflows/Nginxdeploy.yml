@@ -1,24 +1,34 @@
-name: Copy files with SCP
+name: Deploy buildfile
 
 on:
   workflow_dispatch:
 
 jobs:
-  copy:
+  main:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Copy source files
+        uses: actions/checkout@v2
 
-    - name: Copy to Remote Server
-      uses: pierrickdelrieu/scp-action@latest
-      with:
-        host: ${{ secrets.DESTINATION_HOST }}
-        ssh_port: ${{ secrets.DESTINATION_SSH_PORT }}
-        ssh_username: ${{ secrets.SSH_USERNAME }}
-        ssh_key: ${{ secrets.SSH_KEY }}
-        source_dir: ./build
-        destination_dir: /etc/nginx-demo
-        rm: true
+      - name: Setup node environment
+        uses: actions/setup-node@v2
+        with:
+          version: "16.13"
 
+      - name: Install dependencies and build the project
+        run: |
+          yarn
+          yarn build
+
+      # Here we use this action
+      - name: Copy files
+        uses: picodebr/copy-action@v1
+        with:
+          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_user: ${{ secrets.SSH_USERNAME }}
+          ssh_host: ${{ secrets.DESTINATION_HOST }}
+          source: ./build
+          destination: /etc/nginx-demo
+
+      - name: Restart the application
+      # Restart logic goes here...
